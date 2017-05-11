@@ -17,13 +17,13 @@ module Belzebuth
       WaitCondition::RegularExpression.new(wait_condition)
     when String
       begin
-        uri = uri(wait_condition)
+        uri = URI(wait_condition)
         if uri.scheme == "http" || uri.scheme == "https"
           WaitCondition::Api.new(uri)
         else
           WaitCondition::RegularExpression.new(/^#{wait_condition}$/)
         end
-      rescue
+      rescue => e
         WaitCondition::RegularExpression.new(/^#{wait_condition}/)
       end
     else
