@@ -4,6 +4,7 @@ require "belzebuth/wait_condition/api"
 require "belzebuth/wait_condition/regular_expression"
 require "belzebuth/wait_condition/closure"
 require "belzebuth/wait_condition/blocking"
+require "belzebuth/wait_condition/timed"
 require "uri"
 
 module Belzebuth
@@ -11,6 +12,8 @@ module Belzebuth
     case wait_condition
     when WaitCondition::Base
       wait_condition
+    when Numeric
+      WaitCondition::Timed.new(wait_condition)
     when Proc
       WaitCondition::Closure.new(wait_condition)
     when Regexp

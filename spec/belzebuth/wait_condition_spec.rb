@@ -57,4 +57,12 @@ describe Belzebuth do
       expect(subject).to be_kind_of(Belzebuth::WaitCondition::RegularExpression)
     end
   end
+
+  context "when its a numeric" do
+    let(:wait_condition) { 30 }
+
+    it "wrap it into a RegularExpression" do
+      expect(subject).to be_kind_of(Belzebuth::WaitCondition::Timed)
+    end
+  end
 end
