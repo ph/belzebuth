@@ -1,10 +1,9 @@
 # encoding: utf-8
-# require "wait_condition/
-require "belzebuth/api"
+require "belzebuth/wait_condition/base"
 require "uri"
 require "net/http"
 
-module Belzebuth
+module Belzebuth module WaitCondition
   class Api < Base
     MAX_SLEEP_TIME = 10
 
@@ -16,12 +15,14 @@ module Belzebuth
 
     def call(process)
       Net::HTTP.get(@uri)
+      true
     rescue => e
       @sleep_time = [@sleep_time +1, @max_sleep_time].min
+      false
     end
 
     def sleep_time_between_condition
       @sleep_time
     end
   end
-end
+end end

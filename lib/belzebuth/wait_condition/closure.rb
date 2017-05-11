@@ -1,8 +1,9 @@
 # encoding: utf-8
+require "belzebuth/wait_condition/base"
 
 module Belzebuth module WaitCondition
   class Closure < Base
-    def new(callback)
+    def initialize(callback)
       @callback = callback
     end
 
@@ -10,4 +11,4 @@ module Belzebuth module WaitCondition
       @callback.call(process)
     end
   end
-end
+end end

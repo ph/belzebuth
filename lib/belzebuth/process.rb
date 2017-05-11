@@ -1,13 +1,29 @@
 # encoding: utf-8
-require "wait_condition"
-require "response"
+require "belzebuth/wait_condition"
+require "belzebuth/response"
 require "shellwords"
 require "childprocess"
 require "tempfile"
-require "thread"
+
+# @background_process = []
+
+# stop_background_process
+
+# elasticsearch(
+#   :install_xpack => true
+#   :config => {
+#     # ....
+#   }
+# )
+
+# response = logstash("-f ....")
+# response = logstash_plugin("...")
+
+# expect(response).to be_successful
+# auto stop service at the end
 
 module Belzebuth
-  class ExecutionTimeout < StandardErr; end
+  class ExecutionTimeout < StandardError; end
 
   def self.run(command, options = {})
     Process.new(command, options).run
@@ -25,11 +41,11 @@ module Belzebuth
     def initialize(command, options = {})
       @command = command
       @options = DEFAULT_OPTIONS.merge(options)
-      @wait_condition = WaitCondition(@options.fetch(:wait_condition, WaitCondition::Blocking.new))
+      @wait_condition = Belzebuth::WaitCondition(@options.fetch(:wait_condition, WaitCondition::Blocking.new))
     end
 
     def run
-      child_process = ChildProcess.new(Shellword.split(@command))
+      child_process = Response.new(ChildProcess.new(*Shellwords.split(@command)))
       child_process.cwd = @options[:directory]
       child_process.io.stdout = create_tempfile("stdout")
       child_process.io.stderr = create_tempfile("stderr")
@@ -37,28 +53,29 @@ module Belzebuth
       started_at = Time.now
 
       child_process.start
+      @wait_condition.start(child_process)
 
-      response = response.new(child_process)
-      while !@wait_condition.call(response)
-        sleep(options.sleep_time_between_condition)
+      while !@wait_condition.call(child_process)
+        sleep(@wait_condition.sleep_time_between_condition(child_process))
 
-        if check_timeout? && Time.now - started_at > @options[:timeout]
-          raise ExecutionTimeout, "`#{@command}` took too much time to execute (timeout: #{@options[:timeout]})\nstdout:\n#{debug_io(child_process.io.stdout)}\nstderr\n#{debug_io(child_process.io.stderr)}"
+        if can_timeout? && Time.now - started_at > @options[:timeout]
+          child_process.stop
+          raise ExecutionTimeout, "`#{@command}` took too much time to execute (timeout: #{@options[:timeout]})\nstdout:\n#{debug_io(child_process.stdout_lines)}\nstderr\n#{debug_io(child_process.stderr_lines)}"
         end
       end
 
-      @wait_condition.complete
-
-      response
+      @wait_condition.complete(child_process)
+      child_process
     end
 
     private
     def debug_io(io, truncate = DEBUG_IO_LINE)
-      io.rewind
-      io.readlines[-2..-1].join("\n")
+      truncate *= -1
+      return "" if io.empty?
+      io[truncate..-1].join("\n")
     end
 
-    def check_timeout?
+    def can_timeout?
       @options[:timeout] != -1
     end
 

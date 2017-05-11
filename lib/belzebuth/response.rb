@@ -12,7 +12,7 @@ module Belzebuth
     end
 
     def successful?
-      exit_code == 0
+      exit_code == 0 || exit_code.nil?
     end
 
     private

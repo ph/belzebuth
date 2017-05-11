@@ -1,5 +1,5 @@
 # encoding: utf-8
-require "wait_condition/base"
+require "belzebuth/wait_condition/base"
 
 module Belzebuth module WaitCondition
   class Blocking < Base
@@ -7,4 +7,4 @@ module Belzebuth module WaitCondition
       process.exited?
     end
   end
-end
+end end

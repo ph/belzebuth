@@ -1,12 +1,13 @@
 # encoding: utf-8
-require "wait_condition/base"
-require "wait_condition/api"
-require "wait_condition/regular_expression"
-require "wait_condition/closure"
+require "belzebuth/wait_condition/base"
+require "belzebuth/wait_condition/api"
+require "belzebuth/wait_condition/regular_expression"
+require "belzebuth/wait_condition/closure"
+require "belzebuth/wait_condition/blocking"
 require "uri"
 
 module Belzebuth
-  def WaitCondition(wait_condition)
+  def self.WaitCondition(wait_condition)
     case wait_condition
     when WaitCondition::Base
       wait_condition
@@ -26,7 +27,7 @@ module Belzebuth
         WaitCondition::RegularExpression.new(/^#{wait_condition}/)
       end
     else
-      raise "Unknown WaitCondition for: #{WaitCondition}"
+      raise "Unknown WaitCondition for: #{wait_condition}"
     end
   end
 end

@@ -1,5 +1,5 @@
 # encoding: utf-8
-require "base"
+require "belzebuth/wait_condition/base"
 
 module Belzebuth module WaitCondition
   class RegularExpression < Base
@@ -8,7 +8,7 @@ module Belzebuth module WaitCondition
     end
 
     def call(process)
-      io.stdout_lines.any? { |line| @expression.match(line) }
+      process.stdout_lines.any? { |line| @expression.match(line) }
     end
   end
-end
+end end
