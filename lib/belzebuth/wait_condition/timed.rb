@@ -15,7 +15,7 @@ module Belzebuth module WaitCondition
       Time.now - @started_at > @time
     end
 
-    def sleep_time_between_condition
+    def sleep_time_between_condition(process)
       0
     end
   end

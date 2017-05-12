@@ -15,6 +15,6 @@ describe Belzebuth::WaitCondition::Timed do
   end
 
   it "doesn't sleep between condition" do
-    expect(subject.sleep_time_between_condition).to eq(0)
+    expect(subject.sleep_time_between_condition(process)).to eq(0)
   end
 end

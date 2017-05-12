@@ -9,10 +9,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Pier-Hugues Pellerin"]
   spec.email         = ["phpellerin@gmail.com"]
 
-  spec.summary       = %q{Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{Write a longer description or delete this line.}
-  spec.homepage      = "http://github.com"
-  spec.license       = "MIT"
+  spec.summary       = %q{Small wrapper for testing external process}
+  spec.description   = %q{Small wrapper for testing external process and synchronize suite}
+  spec.homepage      = "http://github.com/ph/belzebuth"
+  s.licenses        = ['apache-2.0']
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})

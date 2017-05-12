@@ -4,6 +4,7 @@ require "belzebuth/response"
 require "shellwords"
 require "childprocess"
 require "tempfile"
+require "bundler"
 
 # @background_process = []
 
@@ -36,8 +37,6 @@ module Belzebuth
       :timeout => -1
     }
 
-    DEBUG_IO_LINE = 10
-
     def initialize(command, options = {})
       @command = command
       @options = DEFAULT_OPTIONS.merge(options)
@@ -45,35 +44,32 @@ module Belzebuth
     end
 
     def run
-      child_process = Response.new(ChildProcess.new(*Shellwords.split(@command)))
-      child_process.cwd = @options[:directory]
-      child_process.io.stdout = create_tempfile("stdout")
-      child_process.io.stderr = create_tempfile("stderr")
+      Bundler.with_clean_env do
+        child_process = Response.new(ChildProcess.new(*Shellwords.split(@command)))
+        child_process.cwd = @options[:directory]
+        child_process.io.stdout = create_tempfile("stdout")
+        child_process.io.stderr = create_tempfile("stderr")
 
-      started_at = Time.now
+        started_at = Time.now
 
-      child_process.start
-      @wait_condition.start(child_process)
+        child_process.start
+        @wait_condition.start(child_process)
 
-      while !@wait_condition.call(child_process)
-        sleep(@wait_condition.sleep_time_between_condition(child_process))
+        while !@wait_condition.call(child_process)
+          sleep(@wait_condition.sleep_time_between_condition(child_process))
 
-        if can_timeout? && Time.now - started_at > @options[:timeout]
-          child_process.stop
-          raise ExecutionTimeout, "`#{@command}` took too much time to execute (timeout: #{@options[:timeout]})\nstdout:\n#{debug_io(child_process.stdout_lines)}\nstderr\n#{debug_io(child_process.stderr_lines)}"
+          if can_timeout? && Time.now - started_at > @options[:timeout]
+            child_process.stop
+            raise ExecutionTimeout, "`#{@command}` took too much time to execute (timeout: #{@options[:timeout]}) #{child_process}"
+          end
         end
-      end
 
-      @wait_condition.complete(child_process)
-      child_process
+        @wait_condition.complete(child_process)
+        child_process
+      end
     end
 
     private
-    def debug_io(io, truncate = DEBUG_IO_LINE)
-      truncate *= -1
-      return "" if io.empty?
-      io[truncate..-1].join("\n")
-    end
 
     def can_timeout?
       @options[:timeout] != -1
