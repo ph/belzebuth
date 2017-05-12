@@ -5,6 +5,7 @@ require "belzebuth/wait_condition/regular_expression"
 require "belzebuth/wait_condition/closure"
 require "belzebuth/wait_condition/blocking"
 require "belzebuth/wait_condition/timed"
+require "belzebuth/wait_condition/file_exist"
 require "uri"
 
 module Belzebuth
