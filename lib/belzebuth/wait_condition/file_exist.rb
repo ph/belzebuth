@@ -7,7 +7,7 @@ module Belzebuth module WaitCondition
     end
 
     def call(process)
-      File.exist?(file)
+      File.exist?(@file)
     end
   end
 end end
