@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Small wrapper for testing external process}
   spec.description   = %q{Small wrapper for testing external process and synchronize suite}
   spec.homepage      = "http://github.com/ph/belzebuth"
-  s.licenses        = ['apache-2.0']
+  spec.licenses        = ['apache-2.0']
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
