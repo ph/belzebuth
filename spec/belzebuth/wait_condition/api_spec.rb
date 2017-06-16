@@ -23,11 +23,10 @@ describe Belzebuth::WaitCondition::Api do
 
     it "increments the sleep time for each failures" do
       allow(Net::HTTP).to receive(:get).and_raise { "doesn't work" }
+      subject.call(process)
       expect(subject.sleep_time_between_condition).to eq(1)
       subject.call(process)
       expect(subject.sleep_time_between_condition).to eq(2)
-      subject.call(process)
-      expect(subject.sleep_time_between_condition).to eq(3)
       subject.call(process)
       expect(subject.sleep_time_between_condition).to eq(3)
     end

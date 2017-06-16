@@ -9,7 +9,7 @@ module Belzebuth module WaitCondition
 
     def initialize(uri, max_sleep_time = MAX_SLEEP_TIME)
       @uri = URI(uri)
-      @sleep_time = 1
+      @sleep_time = 0
       @max_sleep_time = max_sleep_time
     end
 
@@ -17,7 +17,8 @@ module Belzebuth module WaitCondition
       Net::HTTP.get(@uri)
       true
     rescue => e
-      @sleep_time = [@sleep_time +1, @max_sleep_time].min
+      @sleep_time += 1
+      @sleep_time = [@sleep_time, @max_sleep_time].min
       false
     end
 
